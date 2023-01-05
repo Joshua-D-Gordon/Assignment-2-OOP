@@ -1,18 +1,18 @@
 package part1;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Ex2_1 {
+    //Array String of files
     private String[] files;
-    private int numOfLines;
 
     /**
      * get method for class's array of file names
@@ -23,31 +23,27 @@ public class Ex2_1 {
     }
 
     /**
-     * get method for class's number of lines in total of files
-     * @return - number of lines in total of files
-     */
-    public int getNumOfLines() {
-        return numOfLines;
-    }
-
-    /**
      * default constructor for class Ex2_1
      */
     public Ex2_1(){
         this.files = null;
-        this.numOfLines = 0;
     }
 
     /**
      * constructor with arguments
      * @param files - string array of file names
-     * @param numOfLines - number of lines in file's
      */
-    public Ex2_1(String[] files, int numOfLines){
+    public Ex2_1(String[] files){
         this.files = files;
-        this.numOfLines  = numOfLines;
     }
 
+    /**
+     * Function that generates an array of random numbers for each line
+     * @param n - number of random numbers to generate
+     * @param seed - seed used to Create a new random number generator
+     * @param bound - bound for random number
+     * @return - array of random numbers
+     */
     public static int[] randomNumOfLines(int n, int seed, int bound){
         int arrOfLengths[] = new int[n];
         Random rand = new Random(seed);
@@ -58,10 +54,23 @@ public class Ex2_1 {
         return arrOfLengths;
     }
 
+    /**
+     * returns a random ascci value of a char
+     * @param min - min ascii value number
+     * @param max- max ascci value number
+     * @return - returns a random ascci number in the range of min and max
+     */
     public static int getRandomChar(int min,int max){
         return (int) ((Math.random() * (max - min)) + min);
     }
 
+    /**
+     * creates text files with random number of lines and on each line a random char sequence
+     * @param n - number of files to create
+     * @param seed - seed used to Create a new random number generator
+     * @param bound - bound for random number
+     * @return - returns a String Array with the text files names
+     */
     public static String[] createTextFiles(int n, int seed, int bound){
         String defaultName = "file_";
         String[] files = new String[n];
@@ -104,6 +113,11 @@ public class Ex2_1 {
         return files;
     }
 
+    /**
+     * get the total number of lines from all file's
+     * @param fileNames - String array of file names
+     * @return - returns the number of lines from all file's
+     */
     public static int getNumOfLines(String[] fileNames){
 
         int numOfTotalLines = 0;
@@ -125,6 +139,11 @@ public class Ex2_1 {
         return numOfTotalLines;
     }
 
+    /**
+     * returns the total number of lines from all files using threads
+     * @param fileNames - string array of file names
+     * @return - total number of lines from all file's
+     */
     public static int getNumOfLinesThreads(String[] fileNames){
         int numOfTotalLines = 0;
         //make n threads , each thread dose one file check.
@@ -140,6 +159,12 @@ public class Ex2_1 {
         return numOfTotalLines;
     }
 
+    /**
+     * return the total number of lines from all file's using a thread pool
+     * @param fileNames - string array of file name's
+     * @return - returns total number of lines of all file's
+     * @Exception - can be thrown for future
+     */
     public static int getNumOfLinesThreadPool(String[] fileNames) throws Exception {
         int numOfTotalLines = 0;
         ExecutorService pool = null;
@@ -148,10 +173,13 @@ public class Ex2_1 {
             pool = Executors.newFixedThreadPool(fileNames.length);
 
             for(int i = 0; i<fileNames.length; i++){
-                future = pool.submit(new callFunction(i,fileNames[i]));
+                future = pool.submit(new callFunction(fileNames[i]));
                 numOfTotalLines+= future.get();
             }
-        }finally {
+        }catch(Exception e){
+            System.out.println("error");
+            e.printStackTrace();
+        } finally{
             pool.shutdown();
         }
 

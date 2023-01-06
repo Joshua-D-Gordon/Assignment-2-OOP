@@ -1,35 +1,69 @@
 package part2;
 
-import java.util.Objects;
+import java.util.Comparator;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadFactory;
 
-public class TaskClass implements Callable {
-    private TaskType tasktype;
-    private Object obj = null;
+public class TaskClass implements Callable, Comparable<TaskClass>, ThreadFactory{
+    public TaskType priority;
+    private Callable callable;
 
-    public TaskClass(Callable task, TaskType tasktype = null){
-        this.obj = task;
-        this.tasktype = tasktype;
+    private static Comparator<TaskClass> cmp = new Comparator<TaskClass>() {
+        @Override
+        public int compare(TaskClass o1, TaskClass o2) {
+            return o1.priority.getPriorityValue()-o2.priority.getPriorityValue();
+        }
+    };
+
+    public static Comparator<TaskClass> getCmp() {
+        return cmp;
     }
 
-    public TaskClass(Callable task){
-        this(task,TaskType.COMPUTATIONAL);
+    public TaskClass(Callable callable, TaskType tasktype){
+        try {
+            this.callable = callable;
+            this.priority = tasktype;
+        }catch (IllegalArgumentException e){
+            this.callable = callable;
+            this.priority = TaskType.OTHER;
+            e.printStackTrace();
+        }
     }
 
-    public int compare(TaskClass t1, TaskClass t2){
-        if(t1.tasktype.equals(t2.tasktype)){
-            return 0;
-        }
+    public TaskClass(Callable callable){
+        this(callable,null);
+    }
 
-        if(t1.tasktype.getPriorityValue() > t2.tasktype.getPriorityValue()){
-            return 1;
-        }else{
-            return -1;
-        }
+    public static TaskClass makeTask(Callable callable, TaskType priority) {
+        return new TaskClass(callable, priority);
     }
 
     @Override
     public Object call() throws Exception {
-        return this.obj;
+        try {
+            return callable.call();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
+
+    @Override
+    public int compareTo(TaskClass o) {
+        return this.priority.getPriorityValue() - this.priority.getPriorityValue();
+    }
+
+    public Thread newThread(Callable callable){
+        Thread customThread = new Thread((Runnable) callable);
+        customThread.setPriority(this.priority.getPriorityValue());
+        return customThread;
+    }
+
+    @Override
+    public Thread newThread(Runnable r) {
+        Thread customThread = new Thread();
+        customThread.setPriority(this.priority.getPriorityValue());
+        return customThread;
+    }
+
 }

@@ -34,7 +34,7 @@ public class TaskClass implements Callable, Comparable<TaskClass>, ThreadFactory
         this(callable,null);
     }
 
-    public static TaskClass makeTask(Callable callable, TaskType priority) {
+    public static TaskClass createTask(Callable callable, TaskType priority) {
         return new TaskClass(callable, priority);
     }
 

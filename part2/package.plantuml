@@ -1,0 +1,52 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class CustomExecutor {
+  + CustomExecutor(): 
+  + submit(Callable, TaskType): Future<T>
+  + invokeAll(Collection<Callable<T>>): List<Future<T>>
+  + gracefullyTerminate(): void
+  + execute(Runnable): void
+  + awaitTermination(long, TimeUnit): boolean
+  + invokeAny(Collection<Callable<T>>, long, TimeUnit): T
+  + invokeAll(Collection<Callable<T>>, long, TimeUnit): List<Future<T>>
+  + shutdownNow(): List<Runnable>
+  + submit(TaskClass): Future<T>
+  + invokeAny(Collection<Callable<T>>): T
+  + shutdown(): void
+  + submit(Callable): Future<T>
+   currentMax: int
+   terminated: boolean
+   shutdown: boolean
+}
+class TaskClass {
+  + TaskClass(Callable): 
+  + TaskClass(Callable, TaskType): 
+  - cmp: Comparator<TaskClass>
+  + createTask(Callable, TaskType): TaskClass
+  + newThread(Runnable): Thread
+  + call(): Object
+  + newThread(Callable): Thread
+  + compareTo(TaskClass): int
+   cmp: Comparator<TaskClass>
+}
+enum TaskType << enumeration >> {
+  - TaskType(int): 
+  + values(): TaskType[]
+  - validatePriority(int): boolean
+  + valueOf(String): TaskType
+   priorityValue: int
+   type: TaskType
+   priority: int
+}
+class test {
+  + test(): 
+  + main(String[]): void
+}
+
+TaskClass      "1" *-[#595959,plain]-> "priority\n1" TaskType       
+test            -[#595959,dashed]->  CustomExecutor : "«create»"
+@enduml

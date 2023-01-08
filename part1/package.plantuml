@@ -1,0 +1,36 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Ex2_1 {
+  + Ex2_1(String[]): 
+  + Ex2_1(): 
+  - files: String[]
+  + createTextFiles(int, int, int): String[]
+  + getNumOfLinesThreadPool(String[]): int
+  + getNumOfLinesThreads(String[]): int
+  + getRandomChar(int, int): int
+  + getNumOfLines(String[]): int
+  + randomNumOfLines(int, int, int): int[]
+   files: String[]
+}
+class callFunction {
+  + callFunction(String): 
+  + call(): Object
+}
+class myThread {
+  + myThread(String): 
+  - numOfTotalLines: int
+  + run(): void
+   numOfTotalLines: int
+}
+class test {
+  + test(): 
+  + main(String[]): void
+}
+
+Ex2_1         -[#595959,dashed]->  callFunction : "«create»"
+Ex2_1         -[#595959,dashed]->  myThread     : "«create»"
+@enduml
